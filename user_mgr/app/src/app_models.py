@@ -1,10 +1,11 @@
 from pydantic import BaseModel
-from sqlalchemy import *
-from usermgr_database import Base
+from sqlalchemy import Column, Numeric, String
+from app_database import Base
 
 
 class UserInfo(Base):
-    __tablename__ = "t_user_info"
+
+    __tablename__ = "T_USER_INFO"
 
     user_id = Column(Numeric, primary_key=True, nullable=False)
     user_name = Column(String)
@@ -13,11 +14,14 @@ class UserInfo(Base):
     user_assets = Column(String)
 
     def __repr__(self):
-        return "UserInfo<%d, %s,%s,%s,%s>" % (self.user_id,\
-               self.user_name,\
-               self.user_email,\
-               self.user_role,\
-               self.user_assets)
+        return "UserInfo(%d, %s,%s,%s,%s)" % (
+            self.user_id,
+            self.user_name,
+            self.user_email,
+            self.user_role,
+            self.user_assets,
+        )
+
 
 class UserInfoReq(BaseModel):
     user_id: int

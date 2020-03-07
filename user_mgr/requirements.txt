@@ -1,0 +1,7 @@
+black
+fastapi
+logzero
+pydantic
+psycopg2
+SQLAlchemy
+uvicorn
