@@ -9,7 +9,7 @@ assetservice = AssetInfoService()
 
 
 @app_v1.get("/v1/assetmgr/{assetid}")
-def get_asset_info(assetid: str):
+def get_asset_info(assetid: str = "-1"):
     log.info(f"get_asset_info {assetid}")
     result = assetservice.get_asset_info(assetid)
     return {"asset_info": result}

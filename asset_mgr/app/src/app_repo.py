@@ -7,11 +7,11 @@ db_obj = DataBaseObj()
 
 class AssetInfoDao(object):
     @staticmethod
-    def query_asset_info(asset_id=-1):
+    def query_asset_info(asset_id):
         session = db_obj.get_db_session()
         try:
             query_result = session.query(AssetInfo)
-            if asset_id == -1:
+            if asset_id == "-1":
                 result = query_result.all()
             else:
                 result = query_result.filter(AssetInfo.asset_id == asset_id).all()
@@ -60,7 +60,9 @@ class AssetInfoDao(object):
     def update_asset_info(asset_id: int, asset_info: AssetInfoReq):
         session = db_obj.get_db_session()
         try:
-            query_result = session.query(AssetInfo).filter(AssetInfo.asset_id == asset_id)
+            query_result = session.query(AssetInfo).filter(
+                AssetInfo.asset_id == asset_id
+            )
             if query_result.count() == 0:
                 log.error(f" user not found", asset_info.asset_id)
             else:
@@ -82,12 +84,12 @@ class AssetInfoDao(object):
                 log.debug(f"session closed")
 
     @staticmethod
-    def delete_asset_info(asset_id=-1):
+    def delete_asset_info(asset_id):
         session = db_obj.get_db_session()
         try:
             query_result = session.query(AssetInfo)
-            if asset_id == -1:
-                query_result.delete()
+            if query_result.count() == 0:
+                log.error(f" asset not found {asset_id}")
             else:
                 query_result.filter(AssetInfo.asset_id == asset_id).delete()
             session.commit()

@@ -8,27 +8,26 @@ assetdao = AssetInfoDao()
 
 class AssetInfoService(object):
     @staticmethod
-    def get_asset_info(asset_id: str):
+    def get_asset_info(asset_id):
         logger.debug(f"get_asset_info")
         result = assetdao.query_asset_info(asset_id)
         return result
 
     @staticmethod
-    def add_asset_info(asset_info: AssetInfoReq):
+    def add_asset_info(asset_info):
         logger.debug(f"add_asset_info")
         assetdao.add_asset_info(asset_info)
         result = assetdao.query_asset_info(asset_info.asset_id)
         return result
 
     @staticmethod
-    def update_asset_info(asset_id: str, asset_info: AssetInfoReq):
+    def update_asset_info(asset_id, asset_info):
         logger.debug(f"update_asset_info")
-        assetdao.update_asset_info(asset_id, asset_info)
-        result = assetdao.query_asset_info(asset_id)
+        result = assetdao.update_asset_info(asset_id, asset_info)
         return result
 
     @staticmethod
-    def del_asset_info(asset_id: str):
+    def del_asset_info(asset_id):
         logger.debug(f"del_asset_info")
         result = assetdao.delete_asset_info(asset_id)
         return result
