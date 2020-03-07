@@ -89,11 +89,11 @@ class UserInfoDao(object):
     def delete_user_info(user_id):
         session = db_obj.get_db_session()
         try:
-            query_result = session.query(UserInfo)
+            query_result = session.query(UserInfo).filter(UserInfo.user_id == user_id)
             if query_result.count() == 0:
                 log.error(f" user not found {user_id}")
             else:
-                result = query_result.filter(UserInfo.user_id == user_id).delete()
+                result = query_result.delete()
             session.commit()
         except Exception as e:
             session.rollback
