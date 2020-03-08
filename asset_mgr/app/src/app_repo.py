@@ -19,7 +19,7 @@ class AssetInfoDao(object):
             log.debug(result)
         except Exception as e:
             session.rollback
-            log.exception(f"query_asset_info operation failed {e}")
+            log.exception(f"query_asset_info failed {e}")
         finally:
             if session is not None:
                 session.close()
@@ -42,7 +42,6 @@ class AssetInfoDao(object):
                 new_asset = AssetInfo(
                     asset_id=asset_info.asset_id,
                     asset_name=asset_info.asset_name,
-                    asset_owner=asset_info.asset_owner,
                     asset_category=asset_info.asset_category,
                 )
                 log.debug(f"add_asset_info {new_asset}")
@@ -51,7 +50,7 @@ class AssetInfoDao(object):
                 result = new_asset
         except Exception as e:
             session.rollback
-            log.exception(f"add_asset_info operation failed {e}")
+            log.exception(f"add_asset_info failed {e}")
         finally:
             if session is not None:
                 session.close()
@@ -83,7 +82,7 @@ class AssetInfoDao(object):
                 result = AssetInfo
         except Exception as e:
             session.rollback
-            log.exception(f"update_asset_info operation failed {e}")
+            log.exception(f"update_asset_info failed {e}")
         finally:
             if session is not None:
                 session.close()
@@ -94,7 +93,9 @@ class AssetInfoDao(object):
     def delete_asset_info(asset_id):
         session = db_obj.get_db_session()
         try:
-            query_result = session.query(AssetInfo).filter(AssetInfo.asset_id == asset_id)
+            query_result = session.query(AssetInfo).filter(
+                AssetInfo.asset_id == asset_id
+            )
             if query_result.count() == 0:
                 log.error(f" asset not found {asset_id}")
                 result = 0
@@ -105,7 +106,7 @@ class AssetInfoDao(object):
             session.commit()
         except Exception as e:
             session.rollback
-            log.exception(f"delete_asset_info operation failed {e}")
+            log.exception(f"delete_asset_info failed {e}")
         finally:
             if session is not None:
                 session.close()
@@ -117,26 +118,64 @@ class AssetInfoDao(object):
         log.debug(f"update_asset_category {category} {count}")
         session = db_obj.get_db_session()
         try:
-            query_result = session.query(AssetCategory).filter(AssetCategory.category_name == category)
+            query_result = session.query(AssetCategory).filter(
+                AssetCategory.category_name == category
+            )
             if query_result.count() == 0:
-                new_category = AssetCategory(
-                    category_name=category,
-                    asset_count=1,
-                )
+                new_category = AssetCategory(category_name=category, asset_count=1,)
                 log.debug(f"adding asset category {category}")
                 session.add(new_category)
             else:
                 query_result.update(
                     {
-                        AssetCategory.asset_count: query_result.first().asset_count+count,
+                        AssetCategory.asset_count: query_result.first().asset_count
+                        + count,
                     }
                 )
                 log.debug(f"updating asset category {category}")
             session.commit()
         except Exception as e:
             session.rollback
-            log.exception(f"update_asset_category operation failed {e}")
+            log.exception(f"update_asset_category failed {e}")
         finally:
             if session is not None:
                 session.close()
                 log.debug(f"session closed")
+
+
+class AssetUserDao:
+    @staticmethod
+    def get_available_asset_by_category(asset_category):
+        session = db_obj.get_db_session()
+        try:
+            asset_id = (
+                session.query(AssetInfo.asset_id)
+                .filter(AssetInfo.asset_category == asset_category, AssetInfo.asset_owner is None)
+                .first()
+            )
+        except Exception as e:
+            log.exception(f"get_available_asset_by_category failed {e}")
+        finally:
+            if session is not None:
+                session.close()
+                log.debug(f"session closed")
+        return asset_id
+
+    @staticmethod
+    def assign_asset_to_user(asset_id, user_id):
+        session = db_obj.get_db_session()
+        try:
+            result = (
+                session.query(AssetInfo)
+                .filter(AssetInfo.asset_id == asset_id)
+                .update({AssetInfo.asset_owner: user_id})
+            )
+            session.commit()
+        except Exception as e:
+            session.rollback
+            log.exception(f"assign_asset_to_user failed {e}")
+        finally:
+            if session is not None:
+                session.close()
+                log.debug(f"session closed")
+        return result

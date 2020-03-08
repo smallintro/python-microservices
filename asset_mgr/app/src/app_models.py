@@ -29,10 +29,7 @@ class AssetCategory(Base):
     asset_count = Column(Numeric)
 
     def __repr__(self):
-        return "AssetCategory(%s, %d)" % (
-            self.category_name,
-            self.asset_count,
-        )
+        return "AssetCategory(%s, %d)" % (self.category_name, self.asset_count,)
 
 
 class AssetInfoReq(BaseModel):
@@ -40,3 +37,4 @@ class AssetInfoReq(BaseModel):
     asset_name: str
     asset_owner: str = None
     asset_category: str
+
