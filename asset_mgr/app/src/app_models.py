@@ -32,9 +32,13 @@ class AssetCategory(Base):
         return "AssetCategory(%s, %d)" % (self.category_name, self.asset_count,)
 
 
-class AssetInfoReq(BaseModel):
+class AssetMgrRequest(BaseModel):
     asset_id: str
     asset_name: str
     asset_owner: str = None
     asset_category: str
 
+
+class AssetMgrResponse(BaseModel):
+    status: str
+    data: dict
