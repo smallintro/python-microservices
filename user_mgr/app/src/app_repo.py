@@ -1,6 +1,7 @@
 from logzero import logger as log
 from app_database import DataBaseObj
 from app_models import UserInfo
+from app_config import *
 
 db_obj = DataBaseObj()
 
@@ -8,10 +9,11 @@ db_obj = DataBaseObj()
 class UserInfoDao(object):
     @staticmethod
     def query_user_info(user_id):
+        log.debug(f"query_user_info {user_id}")
         session = db_obj.get_db_session()
         try:
             query_result = session.query(UserInfo)
-            if user_id == "-1":
+            if user_id == default_user_id:
                 result = query_result.all()
             else:
                 result = query_result.filter(UserInfo.user_id == user_id).all()
@@ -19,7 +21,7 @@ class UserInfoDao(object):
             log.debug(result)
         except Exception as e:
             session.rollback
-            log.exception(f"query_user_info operation failed {e}")
+            log.exception(f"query_user_info failed {e}")
         finally:
             if session is not None:
                 session.close()
@@ -28,6 +30,7 @@ class UserInfoDao(object):
 
     @staticmethod
     def add_user_info(user_info):
+        log.debug(f"add_user_info {user_info}")
         session = db_obj.get_db_session()
         try:
             query_count = (
@@ -51,7 +54,7 @@ class UserInfoDao(object):
                 result = new_user
         except Exception as e:
             session.rollback
-            log.exception(f"add_user_info operation failed {e}")
+            log.exception(f"add_user_info failed {e}")
         finally:
             if session is not None:
                 session.close()
@@ -60,6 +63,7 @@ class UserInfoDao(object):
 
     @staticmethod
     def update_user_info(user_id, user_info):
+        log.debug(f"update_user_info {user_info}")
         session = db_obj.get_db_session()
         try:
             query_result = session.query(UserInfo).filter(UserInfo.user_id == user_id)
@@ -78,7 +82,7 @@ class UserInfoDao(object):
                 result = user_info
         except Exception as e:
             session.rollback
-            log.exception(f"update_user_info operation failed {e}")
+            log.exception(f"update_user_info failed {e}")
         finally:
             if session is not None:
                 session.close()
@@ -87,6 +91,7 @@ class UserInfoDao(object):
 
     @staticmethod
     def delete_user_info(user_id):
+        log.debug(f"update_user_info {user_id}")
         session = db_obj.get_db_session()
         try:
             query_result = session.query(UserInfo).filter(UserInfo.user_id == user_id)
@@ -97,7 +102,30 @@ class UserInfoDao(object):
             session.commit()
         except Exception as e:
             session.rollback
-            log.exception(f"delete_user_info operation failed {e}")
+            log.exception(f"delete_user_info failed {e}")
+        finally:
+            if session is not None:
+                session.close()
+                log.debug(f"session closed")
+        return result
+
+    @staticmethod
+    def update_user_asset_id(user_id, asset_id):
+        log.debug(f"update_user_info {user_id} {asset_id}")
+        session = db_obj.get_db_session()
+        result = 0
+        try:
+            query_user_info = session.query(UserInfo).filter(
+                UserInfo.user_id == user_id
+            )
+            old_assets = query_user_info.first().user_assets
+            result = query_user_info.update(
+                {UserInfo.user_assets: asset_id + ", " + old_assets}
+            )
+            session.commit()
+        except Exception as e:
+            session.rollback
+            log.exception(f"update_user_asset_id failed {e}")
         finally:
             if session is not None:
                 session.close()

@@ -8,6 +8,7 @@ db_obj = DataBaseObj()
 class AssetInfoDao(object):
     @staticmethod
     def query_asset_info(asset_id):
+        log.debug(f"query_asset_info {asset_id}")
         session = db_obj.get_db_session()
         try:
             query_result = session.query(AssetInfo)
@@ -28,6 +29,7 @@ class AssetInfoDao(object):
 
     @staticmethod
     def add_asset_info(asset_info):
+        log.debug(f"add_asset_info {asset_info}")
         session = db_obj.get_db_session()
         try:
             count_result = (
@@ -43,6 +45,7 @@ class AssetInfoDao(object):
                     asset_id=asset_info.asset_id,
                     asset_name=asset_info.asset_name,
                     asset_category=asset_info.asset_category,
+                    asset_owner=asset_info.asset_owner,
                 )
                 log.debug(f"add_asset_info {new_asset}")
                 session.add(new_asset)
@@ -59,6 +62,7 @@ class AssetInfoDao(object):
 
     @staticmethod
     def update_asset_info(asset_id, asset_info):
+        log.debug(f"update_asset_info {asset_info}")
         session = db_obj.get_db_session()
         try:
             query_result = session.query(AssetInfo).filter(
@@ -91,6 +95,7 @@ class AssetInfoDao(object):
 
     @staticmethod
     def delete_asset_info(asset_id):
+        log.debug(f"delete_asset_info {asset_id}")
         session = db_obj.get_db_session()
         try:
             query_result = session.query(AssetInfo).filter(
@@ -146,11 +151,15 @@ class AssetInfoDao(object):
 class AssetUserDao:
     @staticmethod
     def get_available_asset_by_category(asset_category):
+        log.debug(f"get_available_asset_by_category {asset_category}")
         session = db_obj.get_db_session()
         try:
             asset_id = (
                 session.query(AssetInfo.asset_id)
-                .filter(AssetInfo.asset_category == asset_category, AssetInfo.asset_owner is None)
+                .filter(
+                    AssetInfo.asset_category == asset_category,
+                    AssetInfo.asset_owner.is_(None),
+                )
                 .first()
             )
         except Exception as e:
@@ -163,6 +172,7 @@ class AssetUserDao:
 
     @staticmethod
     def assign_asset_to_user(asset_id, user_id):
+        log.debug(f"assign_asset_to_user {asset_id} {user_id}")
         session = db_obj.get_db_session()
         try:
             result = (
