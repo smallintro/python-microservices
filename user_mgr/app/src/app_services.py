@@ -40,10 +40,12 @@ class UserInfoService(object):
         log.debug(f"calling" + assign_asset_api.format(asset_category, user_id))
         response = requests.put(assign_asset_api.format(asset_category, user_id))
         print(response)
-        log.debug(f"assign_asset_api {response.status_code} {response.ok} {response.content} {response.text}")
+        log.debug(
+            f"assign_asset_api {response.status_code} {response.ok} {response.content} {response.text}"
+        )
         if response.ok:
-            asset_id = json.loads(response.content)["data"]["asset_id"]
-            if asset_id != default_asset_id:
+            asset_id = json.loads(response.content)["data"]["assetid"]
+            if asset_id != DEFAULT_ALL:
                 log.debug(f"asset {asset_id} will be assigned to {user_id}")
                 user_dao.update_user_asset_id(user_id, asset_id)
         return asset_id

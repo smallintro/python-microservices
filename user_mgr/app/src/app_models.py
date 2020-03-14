@@ -29,3 +29,8 @@ class UserInfoReq(BaseModel):
     user_email: str
     user_role: int = None
     user_assets: str = None
+
+
+class UserMgrResponse(BaseModel):
+    status: str
+    data: dict

@@ -1,1 +1,1 @@
-# uvicorn app_assetmgr:app_v1 --port 8001 --reload
+# uvicorn app_assetmgr:app --port 8001 --reload

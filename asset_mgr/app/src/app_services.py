@@ -42,5 +42,7 @@ class AssetInfoService(object):
             asset_user_dao.assign_asset_to_user(asset_id[0], user_id)
             return asset_id[0]
         else:
-            log.error(f"No asset for the given category {asset_category} is available, Please contact asset admin")
-            return default_asset_id
+            log.error(
+                f"No asset for the given category {asset_category} is available, Please contact asset admin"
+            )
+            return DEFAULT_ALL
