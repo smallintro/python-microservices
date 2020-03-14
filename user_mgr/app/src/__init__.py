@@ -1,1 +1,1 @@
-# uvicorn app_usermgr:app_v1 --port 8002 --reload
+# uvicorn app_usermgr:app --port 8002 --reload

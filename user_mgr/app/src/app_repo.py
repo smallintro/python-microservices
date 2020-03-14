@@ -13,7 +13,7 @@ class UserInfoDao(object):
         session = db_obj.get_db_session()
         try:
             query_result = session.query(UserInfo)
-            if user_id == default_user_id:
+            if user_id == DEFAULT_ALL:
                 result = query_result.all()
             else:
                 result = query_result.filter(UserInfo.user_id == user_id).all()
@@ -39,7 +39,7 @@ class UserInfoDao(object):
                 .count()
             )
             if query_count > 0:
-                log.error(f" user already exists {user_info.user_id}")
+                log.warn(f" user already exists {user_info.user_id}")
             else:
                 new_user = UserInfo(
                     user_id=user_info.user_id,
@@ -68,7 +68,7 @@ class UserInfoDao(object):
         try:
             query_result = session.query(UserInfo).filter(UserInfo.user_id == user_id)
             if query_result.count() == 0:
-                log.error(f" user not found {user_id}")
+                log.warn(f" user not found {user_id}")
             else:
                 query_result.update(
                     {
@@ -79,7 +79,9 @@ class UserInfoDao(object):
                     }
                 )
                 session.commit()
-                result = user_info
+                result = (
+                    session.query(UserInfo).filter(UserInfo.user_id == user_id).all()
+                )
         except Exception as e:
             session.rollback
             log.exception(f"update_user_info failed {e}")

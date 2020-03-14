@@ -38,7 +38,7 @@ class AssetInfoDao(object):
                 .count()
             )
             if count_result > 0:
-                log.error(f" user already exists {asset_info.asset_id}")
+                log.warn(f" user already exists {asset_info.asset_id}")
             else:
                 AssetInfoDao.update_asset_category(asset_info.asset_category, 1)
                 new_asset = AssetInfo(
@@ -69,7 +69,7 @@ class AssetInfoDao(object):
                 AssetInfo.asset_id == asset_id
             )
             if query_result.count() == 0:
-                log.error(f" user not found", asset_info.asset_id)
+                log.warn(f" asset not found {asset_info.asset_id}")
             else:
                 old_category = query_result.first().asset_category
                 query_result.update(
@@ -83,7 +83,11 @@ class AssetInfoDao(object):
                     AssetInfoDao.update_asset_category(asset_info.asset_category, 1)
                     AssetInfoDao.update_asset_category(old_category, -1)
                 session.commit()
-                result = AssetInfo
+                result = (
+                    session.query(AssetInfo)
+                    .filter(AssetInfo.asset_id == asset_id)
+                    .all()
+                )
         except Exception as e:
             session.rollback
             log.exception(f"update_asset_info failed {e}")
